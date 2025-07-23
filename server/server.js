@@ -1,35 +1,48 @@
 const express = require("express");
-const { spawn } = require("child_process");
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const { spawn } = require("child_process");
+const path = require("path");
 
 const app = express();
+const PORT =  5000;
+
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
+// Route: POST /api/analyze
 app.post("/api/analyze", (req, res) => {
-    const text = req.body.text;
+  const text = req.body.text;
 
-    const process = spawn("python", ["../vader/analyze.py", text]);
+  if (!text) {
+    return res.status(400).json({ error: "Text is required." });
+  }
 
-    let result = "";
+  // Run Python script
+  const python = spawn("python", [path.join(__dirname, "vader", "analyze.py"), text]);
 
-    process.stdout.on("data", (data) => {
-        result += data.toString();
-    });
+  let result = "";
 
-    process.stderr.on("data", (data) => {
-        console.error("Error:", data.toString());
-    });
+  python.stdout.on("data", (data) => {
+    result += data.toString();
+  });
 
-    process.on("close", () => {
-        try {
-            res.json(JSON.parse(result));
-        } catch (err) {
-            res.status(500).json({ error: "Failed to parse result" });
-        }
-    });
+  python.stderr.on("data", (data) => {
+    console.error(`Python stderr: ${data}`);
+  });
+
+  python.on("close", (code) => {
+    try {
+      const jsonResult = JSON.parse(result);
+      res.json(jsonResult);
+    } catch (err) {
+      console.error("Error parsing result:", result);
+      res.status(500).json({ error: "Failed to analyze sentiment." });
+    }
+  });
 });
 
-app.listen(5000, () => {
-    console.log("Server running on http://localhost:5000");
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
