@@ -8,7 +8,7 @@ function App() {
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
-    const res = await axios.post("https://text-sentiment-anayzer-backend.onrender.com", { text });
+    const res = await axios.post("https://text-sentiment-anayzer-backend.onrender.com/api/analyze", { text });
     setResult(res.data);
   };
 
