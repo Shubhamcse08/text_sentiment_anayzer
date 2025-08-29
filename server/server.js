@@ -7,7 +7,7 @@ const path = require("path");
 const app = express();
 const PORT =  5000;
 
-app.use(cors());
+app.use(cors({ origin: ['https://your-client-url.onrender.com', 'http://localhost:3000'] }));
 app.use(bodyParser.json());
 
 // Route: POST /api/analyze
