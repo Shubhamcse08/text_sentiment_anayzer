@@ -22,16 +22,20 @@ app.post("/api/analyze", (req, res) => {
   const python = spawn("python", [path.join(__dirname, "vader", "analyze.py"), text]);
 
   let result = "";
-
+  let errorOutput = "";
   python.stdout.on("data", (data) => {
     result += data.toString();
   });
 
   python.stderr.on("data", (data) => {
+    errorOutput += data.toString();
     console.error(`Python stderr: ${data}`);
   });
 
   python.on("close", (code) => {
+     if (errorOutput) {
+      return res.status(500).json({ error: "Python error", details: errorOutput });
+    }
     try {
       const jsonResult = JSON.parse(result);
       res.json(jsonResult);
