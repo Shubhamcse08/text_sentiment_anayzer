@@ -6,6 +6,11 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 analyzer = SentimentIntensityAnalyzer()
 
+if len(sys.argv) < 2:
+    print(json.dumps({"error": "No text provided"}))
+    sys.exit()
+    
+
 text = sys.argv[1]
 scores = analyzer.polarity_scores(text)
 
@@ -18,3 +23,4 @@ result = {
 }
 
 print(json.dumps(result))
+sys.stdout.flush()
