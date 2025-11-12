@@ -4,11 +4,7 @@ const Header = () => {
   return (
     <header className="app-header">
       <div className="header-left">
-        <a
-          href="https://portfolio-shubham-14av.onrender.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        
           Shubham Singh
         </a>
       </div>
