@@ -14,12 +14,17 @@ if len(sys.argv) < 2:
 text = sys.argv[1]
 scores = analyzer.polarity_scores(text)
 
+if scores["compound"] >= 0.05:
+    sentiment = "Positive"
+elif scores["compound"] <= -0.05:
+    sentiment = "Negative"
+else:
+    sentiment = "Neutral"
+
 result = {
-    "sentiment": "positive" if scores["compound"] >= 0.05 else "negative" if scores["compound"] <= -0.05 else "neutral",
-    "compound": scores["compound"],
-    "positive": scores["pos"],
-    "neutral": scores["neu"],
-    "negative": scores["neg"]
+    "text": text,
+    "sentiment": sentiment,
+    **scores
 }
 
 print(json.dumps(result))
