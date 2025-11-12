@@ -5,11 +5,22 @@ import './App.css';
 function App() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleSubmit = async () => {
     if (!text.trim()) return;
-    const res = await axios.post("https://text-sentiment-anayzer-backend.onrender.com/api/analyze", { text });
-    setResult(res.data);
+    setLoading(true);
+    setResult(null);
+    
+    try {
+      const res = await axios.post("https://text-sentiment-anayzer-backend.onrender.com/api/analyze", { text });
+      setResult(res.data);
+    } catch (err) {
+      console.error("API error:", err);
+      setResult({ sentiment: "Error", compound: 0, positive: 0, neutral: 0, negative: 0 });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRefresh = () => {
@@ -28,12 +39,15 @@ function App() {
           />
         <br />
         <div >
-          <button className="sumbit-buttton" onClick={handleSubmit}>Analyze</button>
+          <button className="submit-buttton" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Analyzing..." : "Analyze"}
+          </button>
         </div>
       </div>
       <div className="Resultdata">
          <h2>Result:</h2>
-        {result && (
+            {loading && <p className="loading">⏳ Analyzing sentiment...</p>}
+        {result && !loading (
           <div className="result">
             <p>Sentiment: {result.sentiment}</p>
             <p>Compound: {result.compound}</p>
