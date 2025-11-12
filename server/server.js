@@ -7,7 +7,7 @@ const path = require("path");
 const app = express();
 const PORT =  5000;
 
-app.use(cors({ origin: ['https://text-sentiment-anayzer.onrender.com', 'http://localhost:3000'] }));
+app.use(cors({ origin: 'https://text-sentiment-anayzer.onrender.com' }));
 app.use(bodyParser.json());
 
 // Route: POST /api/analyze
